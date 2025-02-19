@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Button, Container, Typography, Box, Grid } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./App.css";
+import Alphabet from "./components/Alphabet";
+import Word from "./components/Word";
+import Status from "./components/Status";
 
 const words = ["react", "typescript", "hangman", "github", "copilot"];
 const maxAttempts = 6;
@@ -39,29 +42,6 @@ const App: React.FC = () => {
     setAttempts(0);
   };
 
-  const renderWord = () => {
-    return word.split("").map((letter, index) => (
-      <span key={index} className="letter">
-        {guesses.includes(letter) ? letter : "_"}
-      </span>
-    ));
-  };
-
-  const renderAlphabet = () => {
-    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-    return alphabet.map((letter) => (
-      <Button
-        key={letter}
-        onClick={() => handleGuess(letter)}
-        disabled={guesses.includes(letter) || attempts >= maxAttempts}
-        variant="contained"
-        color="primary"
-      >
-        {letter}
-      </Button>
-    ));
-  };
-
   const isGameOver = attempts >= maxAttempts;
   const isGameWon = word.split("").every((letter) => guesses.includes(letter));
 
@@ -73,32 +53,23 @@ const App: React.FC = () => {
             Hangman Game
           </Typography>
           <Box className="word" mb={3}>
-            {renderWord()}
+            <Word word={word} guesses={guesses} />
           </Box>
           <Grid container spacing={1} justifyContent="center">
-            {renderAlphabet()}
+            <Alphabet
+              guesses={guesses}
+              handleGuess={handleGuess}
+              attempts={attempts}
+              maxAttempts={maxAttempts}
+            />
           </Grid>
           <Box className="status" mt={3}>
-            {isGameOver && (
-              <Typography variant="h6" color="error">
-                Game Over! The word was "{word}".
-              </Typography>
-            )}
-            {isGameWon && (
-              <Typography variant="h6" color="primary">
-                Congratulations! You guessed the word "{word}".
-              </Typography>
-            )}
-            {(isGameOver || isGameWon) && (
-              <Button
-                onClick={handleRestart}
-                variant="contained"
-                color="secondary"
-                sx={{ mt: 2 }}
-              >
-                Restart Game
-              </Button>
-            )}
+            <Status
+              isGameOver={isGameOver}
+              isGameWon={isGameWon}
+              word={word}
+              handleRestart={handleRestart}
+            />
           </Box>
         </Box>
       </Container>
